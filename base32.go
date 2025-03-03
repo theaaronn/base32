@@ -28,7 +28,7 @@ var alphabetMap = map[rune]int{
 	'Y': 24, 'Z': 25, '2': 26, '3': 27, '4': 28, '5': 29, '6': 30, '7': 31,
 }
 
-func Encode32(initialString string) (finalString string, err error) {
+func Encode(initialString string) (finalString string, err error) {
 	length := len(initialString)
 	if length == 0 {
 		return "", nil
@@ -65,7 +65,7 @@ func Encode32(initialString string) (finalString string, err error) {
 	}
 	return sb.String(), nil
 }
-func Decode32(encodedStr string) (decodedStr string, err error) {
+func Decode(encodedStr string) (decodedStr string, err error) {
 	length := len(encodedStr)
 	if length == 0 {
 		return "", nil
