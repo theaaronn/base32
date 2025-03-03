@@ -33,13 +33,16 @@ func Encode32(initialString string) (finalString string, err error) {
 	if length == 0 {
 		return "", nil
 	}
-
 	var (
+		sb         strings.Builder
 		inputBytes = []byte(initialString)
 		start      = 0
 		end        = 0
 		buf        = 0
 	)
+
+	sb.Grow(length*8/5 + 8)
+	
 	for end != length {
 		start = end
 		end = min(end+5, length)
@@ -52,15 +55,15 @@ func Encode32(initialString string) (finalString string, err error) {
 		numChars := int(math.Ceil(float64(len(chunk)*8) / 5))
 		for i := numChars - 1; i >= 0; i-- {
 			val := (buf >> (i * 5)) & 0x1F
-			finalString += string(alphabet[val])
+			sb.WriteByte(alphabet[val])
 		}
 		// Pad equals
 		for range paddingEqualsMapEnc[len(chunk)] {
-			finalString += "="
+			sb.WriteByte('=')
 		}
 		buf = 0
 	}
-	return
+	return sb.String(), nil
 }
 func Decode32(encodedStr string) (decodedStr string, err error) {
 	length := len(encodedStr)
@@ -71,9 +74,9 @@ func Decode32(encodedStr string) (decodedStr string, err error) {
 	encodedStr = strings.TrimRight(encodedStr, "=")
 
 	var (
+		output = make([]byte, 0, length*5/8+4)
 		buf      int
 		bitsLeft int
-		output   []byte
 	)
 	for _, char := range encodedStr {
 		if val, ok := alphabetMap[char]; ok {
